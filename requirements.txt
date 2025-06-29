@@ -1,0 +1,6 @@
+streamlit
+pandas
+requests
+pytesseract
+pdf2image
+openai
