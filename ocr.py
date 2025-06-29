@@ -1,18 +1,22 @@
-import os
+import io
 import ast
+import fitz  # PyMuPDF
 import pytesseract
-from pdf2image import convert_from_bytes
+from PIL import Image
 from openai import OpenAI
 
 def extract_addresses_from_pdf(pdf_bytes: bytes, openai_api_key: str) -> list[str]:
     client = OpenAI(api_key=openai_api_key)
 
     try:
-        images = convert_from_bytes(pdf_bytes, poppler_path=None)
         full_text = ""
-        for i, img in enumerate(images):
-            page_text = pytesseract.image_to_string(img)
-            full_text += f"--- Page {i + 1} ---\n{page_text.strip()}\n\n"
+        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+        for page_index in range(len(doc)):
+            pix = doc[page_index].get_pixmap(dpi=300)
+            img_bytes = pix.tobytes("png")
+            image = Image.open(io.BytesIO(img_bytes))
+            page_text = pytesseract.image_to_string(image)
+            full_text += f"--- Page {page_index + 1} ---\n{page_text.strip()}\n\n"
     except Exception as e:
         return [f"OCR failed: {e}"]
 
@@ -36,4 +40,3 @@ Output only a **Python list containing one string**, with no explanation:
         return ast.literal_eval(result.strip())
     except Exception as e:
         return [f"OpenAI error: {e}"]
-

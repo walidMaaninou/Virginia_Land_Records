@@ -1,6 +1,5 @@
 streamlit
 pandas
 requests
-pytesseract
-pdf2image
+pymupdf
 openai
