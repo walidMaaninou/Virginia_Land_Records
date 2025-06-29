@@ -8,7 +8,7 @@ def extract_addresses_from_pdf(pdf_bytes: bytes, openai_api_key: str) -> list[st
     client = OpenAI(api_key=openai_api_key)
 
     try:
-        images = convert_from_bytes(pdf_bytes)  # In-memory conversion
+        images = convert_from_bytes(pdf_bytes, poppler_path=None)
         full_text = ""
         for i, img in enumerate(images):
             page_text = pytesseract.image_to_string(img)
