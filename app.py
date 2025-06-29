@@ -60,7 +60,7 @@ if st.session_state.get("scraping", False):
                     seen_urowids.add(urowid)
 
                     try:
-                        filepath = download_pdf(
+                        pdf_bytes = download_pdf(
                             token=token,
                             urowid=urowid,
                             instr_group=d["instr_group"],
@@ -68,7 +68,7 @@ if st.session_state.get("scraping", False):
                             verified=d.get("verified", "VER")
                         )
                         status_placeholder.info(f"📄 OCR on: {urowid}")
-                        addresses = extract_addresses_from_pdf(filepath, openai_api_key=st.secrets["OPENAI_API_KEY"])
+                        addresses = extract_addresses_from_pdf(pdf_bytes, openai_api_key=st.secrets["OPENAI_API_KEY"])
 
                         rows.append({
                             "Instrument Type": d["instr_type"].strip(),

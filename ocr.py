@@ -1,21 +1,14 @@
 import os
 import ast
 import pytesseract
-from pdf2image import convert_from_path
+from pdf2image import convert_from_bytes
 from openai import OpenAI
 
-def extract_addresses_from_pdf(filepath: str, openai_api_key: str) -> list[str]:
-    """
-    Applies OCR on a PDF and uses OpenAI to extract the most likely property address.
-
-    :param filepath: Full path to the PDF file
-    :param openai_api_key: OpenAI API key to use for the request
-    :return: List with one string (the address), or an error message in a list
-    """
+def extract_addresses_from_pdf(pdf_bytes: bytes, openai_api_key: str) -> list[str]:
     client = OpenAI(api_key=openai_api_key)
 
     try:
-        images = convert_from_path(filepath)
+        images = convert_from_bytes(pdf_bytes)  # In-memory conversion
         full_text = ""
         for i, img in enumerate(images):
             page_text = pytesseract.image_to_string(img)
@@ -40,7 +33,7 @@ Output only a **Python list containing one string**, with no explanation:
             temperature=0,
         )
         result = response.choices[0].message.content
-        addresses = ast.literal_eval(result.strip())
-        return addresses
+        return ast.literal_eval(result.strip())
     except Exception as e:
         return [f"OpenAI error: {e}"]
+
