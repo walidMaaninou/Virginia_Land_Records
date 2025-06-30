@@ -4,8 +4,7 @@ import time
 from auth import get_access_token
 from search import search_names
 from details import get_instr_details
-from pdf import download_pdf
-import streamlit as st
+from pdf import download_pdf_to_file
 from ocr import extract_addresses_from_pdf
 
 st.set_page_config(page_title="📄 Virginia Records Scraper", layout="wide")
@@ -60,7 +59,7 @@ if st.session_state.get("scraping", False):
                     seen_urowids.add(urowid)
 
                     try:
-                        pdf_bytes = download_pdf(
+                        filepath = download_pdf_to_file(
                             token=token,
                             urowid=urowid,
                             instr_group=d["instr_group"],
@@ -68,7 +67,7 @@ if st.session_state.get("scraping", False):
                             verified=d.get("verified", "VER")
                         )
                         status_placeholder.info(f"📄 OCR on: {urowid}")
-                        addresses = extract_addresses_from_pdf(pdf_bytes, openai_api_key=st.secrets["OPENAI_API_KEY"])
+                        addresses = extract_addresses_from_pdf(filepath, st.secrets["OPENAI_API_KEY"])
 
                         rows.append({
                             "Instrument Type": d["instr_type"].strip(),
