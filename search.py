@@ -33,15 +33,16 @@ BASE_PAYLOAD = {
 }
 
 
-def search_names(token: str, search_term: str = "aa", start_date="4/1/2025", end_date="6/29/2025", max_pages: int = 1):
+def search_names(token: str, search_term: str = "aa", instr_types=None, from_date="04/01/2025", to_date="06/29/2025", max_pages: int = 100):
     """
     Generator that yields pages of names from the Virginia Court search API.
 
     :param token: Bearer access token from login
     :param search_term: Initial search input
-    :param start_date: Start of search window
-    :param end_date: End of search window
-    :param max_pages: Max number of pages to retrieve
+    :param instr_types: List of selected instrument type codes
+    :param from_date: Search window start date (MM/DD/YYYY)
+    :param to_date: Search window end date (MM/DD/YYYY)
+    :param max_pages: Safety limit for max number of pages
     :yield: List of result dicts per page
     """
     headers = COMMON_HEADERS.copy()
@@ -55,8 +56,9 @@ def search_names(token: str, search_term: str = "aa", start_date="4/1/2025", end
         payload.update({
             "name": search_term,
             "referenceName": reference_name,
-            "srchFromDt": start_date,
-            "srchToDt": end_date
+            "srchFromDt": from_date,
+            "srchToDt": to_date,
+            "instr_type": instr_types or BASE_PAYLOAD["instr_type"],
         })
 
         response = requests.post(SEARCH_URL, headers=headers, json=payload)
@@ -67,12 +69,11 @@ def search_names(token: str, search_term: str = "aa", start_date="4/1/2025", end
         if not results:
             break
 
-        # Prevent infinite loops if data is repeated
         last_name = results[-1]['name']
         if last_name in seen:
             break
         seen.add(last_name)
 
         yield results
+        reference_name = last_name
 
-        reference_name = last_name  # Update referenceName for the next page
