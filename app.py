@@ -7,6 +7,7 @@ from search import search_names
 from details import get_instr_details
 from pdf import download_pdf_to_file
 from ocr import extract_addresses_from_pdf
+from instrument_types import INSTR_TYPE_CODE_MAP
 
 st.set_page_config(page_title="📄 Virginia Records Scraper", layout="wide")
 st.title("📅 Virginia Land Records Address Extractor")
@@ -21,21 +22,6 @@ date_range_option = st.sidebar.selectbox(
     options=["7 days", "1 month", "2 months", "3 months"],
     index=1
 )
-
-INSTR_TYPE_CODE_MAP = {
-    "AFFIDAVIT": "AF     ",
-    "DEED TRANSFER ON DEATH": "DTD    ",
-    "DEED PURSUANT TO DIVORCE": "DPD    ",
-    "DIVORCE DECREE": "DD     ",
-    "MECHANICS LIEN": "LM     ",
-    "MEMORANDUM OF LIEN": "MEML   ",
-    "NOTICE OF LIEN": "NL     ",
-    "NOTICE OF LIS PENDENS": "NLP    ",
-    "NOTICE": "NOT    ",
-    "ORDER-DECREE BANKRUPTCY W/PLAT": "ODRB-PL",
-    "REAL ESTATE AFFIDAVIT": "REA    ",
-    "WILL": "WILL   "
-}
 
 instr_type_options = list(INSTR_TYPE_CODE_MAP.keys())
 selected_instr_types = st.sidebar.multiselect("Instrument Types", instr_type_options)

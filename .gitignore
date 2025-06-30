@@ -1,0 +1,16 @@
+# Ignore macOS system files
+.DS_Store
+downloads/.DS_Store
+
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore all files in the downloads directory
+downloads/
+
+# Ignore compiled Python files anywhere
+*.pyc
+
+# Ignore Streamlit hidden settings
+.streamlit/
